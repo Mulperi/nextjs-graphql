@@ -5,39 +5,49 @@ import { useQuery } from 'urql';
 import TaskList from '../components/task-list';
 import Header from '../components/header';
 import CreateTaskDialog from '../components/create-task-dialog';
+import { StackDivider, useDisclosure, VStack } from '@chakra-ui/react';
+import UserTags from '../components/user-tags';
 import { useState } from 'react';
 
-const TasksQuery = `
-  query {
-    tasks {
-      id
-      title
-      authorId
-      completed
-    }
+const QueryUsersTasks = `
+query {
+  users {
+    id
+    name
+    email
   }
-`;
-// const UsersQuery = `
-//   query {
-//     users {
-//       id
-//       email
-//       name
-//     }
-//   }
-// `;
+  tasks {
+    id
+    title
+    authorId
+    author {
+      name, email
+    }
+    completed
+  }
+}`;
+
+
 const Home: NextPage = () => {
   const [result, reexecuteQuery] = useQuery({
-    query: TasksQuery,
+    query: QueryUsersTasks,
   });
   const { data, fetching, error } = result;
-
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedUsers, setSelectedUsers] = useState<number[]>(data && data.users ? data.users.map((user: any) => user.id) : [])
 
   if (fetching) return <p>Loading...</p>;
   if (error) return <p>Oh no... {error.message}</p>;
 
-
+  function onChangeUserTags(userId: number) {
+    let newSelectedUsers = [...selectedUsers];
+    if (selectedUsers.includes(userId)) {
+      newSelectedUsers.splice(selectedUsers.indexOf(userId), 1);
+    } else {
+      newSelectedUsers.push(userId);
+    }
+    setSelectedUsers(newSelectedUsers);
+  }
 
   return (
     <div className={styles.container}>
@@ -50,17 +60,16 @@ const Home: NextPage = () => {
       <Header />
 
       <main>
-        <button onClick={() => {
-          setDialogOpen(!dialogOpen)
-        }}>Create new</button>
-        <TaskList data={data} title="Todo" completed={false} color="rgb(250,120,120)" />
-        <TaskList data={data} title="Completed" completed={true} color="rgb(120,250,120)" />
-        <CreateTaskDialog open={dialogOpen} />
+        <VStack spacing={4} divider={<StackDivider borderColor='gray.200' />}>
+          <UserTags users={data.users} changeTags={onChangeUserTags} selectedTags={selectedUsers} />
+          <TaskList data={data} title="Todo" completed={false} color="rgb(250,120,120)" openDialog={onOpen} selectedUsers={selectedUsers} />
+          <TaskList data={data} title="Completed" completed={true} color="rgb(120,250,120)" selectedUsers={selectedUsers} />
+        </VStack>
       </main>
 
+      {isOpen && <CreateTaskDialog open={isOpen} onClose={onClose} users={data.users} />}
 
-
-    </div>
+    </div >
   )
 }
 

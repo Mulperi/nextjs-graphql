@@ -1,20 +1,11 @@
-import { useState } from "react";
+import { AddIcon } from "@chakra-ui/icons";
+import { Heading, IconButton } from "@chakra-ui/react";
 import { useMutation } from "urql";
 import Task from "./task";
 
-const ulStyle = {
-    marginBlockStart: "0",
-    marginBlockEnd: "0",
-    paddingInlineStart: "0",
-    listStyleType: "none",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px"
-}
+export default function TaskList(props: { data: any, completed: boolean, title: string, color: string, openDialog?: any, selectedUsers: number[] }) {
 
-export default function TaskList(props: { data: any, completed: boolean, title: string, color: string }) {
-
-    const UpdateTask = `
+  const UpdateTask = `
     mutation ($id: Int!, $completed: Boolean!) {
         updateTask (id: $id, completed: $completed) {
           id
@@ -23,7 +14,7 @@ export default function TaskList(props: { data: any, completed: boolean, title: 
       }
     `;
 
-    const DeleteTask = `
+  const DeleteTask = `
     mutation ($id: Int!) {
         deleteTask (id: $id) {
           id
@@ -31,15 +22,29 @@ export default function TaskList(props: { data: any, completed: boolean, title: 
       }
     `;
 
-    const [updateTaskResult, updateTask] = useMutation(UpdateTask);
-    const [deleteTaskResult, deleteTask] = useMutation(DeleteTask);
+  const [updateTaskResult, updateTask] = useMutation(UpdateTask);
+  const [deleteTaskResult, deleteTask] = useMutation(DeleteTask);
 
-    return (<section>
-        <h4>{props.title}</h4>
-        <ul style={ulStyle}>
-            {props.data.tasks.filter((task: any) => task.completed === props.completed).map((task: any) => (
-                <Task key={task.id} task={task} updateTask={updateTask} deleteTask={deleteTask} color={props.color} />
-            ))}
-        </ul>
-    </section>)
+  return (<section style={{ width: "100%" }}>
+    <Heading as="h3" size="l">{props.title}</Heading>
+
+    <ul style={{
+      marginBlockStart: "0",
+      marginBlockEnd: "0",
+      paddingInlineStart: "0",
+      listStyleType: "none",
+      display: "flex",
+      flexWrap: "wrap",
+      alignItems: "center",
+      justifyContent: "flex-start",
+      gap: "10px"
+    }}>
+      {props.openDialog && <li><IconButton aria-label='Add to friends' icon={<AddIcon />} onClick={() => {
+        props.openDialog()
+      }} /> </li>}
+      {props.data.tasks.filter((task: any) => task.completed === props.completed).filter((task: any) => props.selectedUsers.includes(task.authorId)).map((task: any) => (
+        <Task key={task.id} task={task} updateTask={updateTask} deleteTask={deleteTask} color={props.color} />
+      ))}
+    </ul>
+  </section>)
 }
