@@ -1,9 +1,10 @@
-import { Heading } from '@chakra-ui/react'
+import { Heading, Text } from '@chakra-ui/react'
 
 export default function Header() {
     return (
-        <header>
-            <Heading as="h1" size="2xl" mb={4}>Next.js + GraphQL</Heading>
+        <header style={{ marginBottom: "1rem" }}>
+            <Heading as="h1" size="xl">Tasklist</Heading>
+            <Text fontSize='md'>Next + GraphQL</Text>
         </header>
     )
 }

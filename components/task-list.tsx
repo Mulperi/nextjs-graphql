@@ -1,9 +1,10 @@
 import { AddIcon } from "@chakra-ui/icons";
 import { Heading, IconButton } from "@chakra-ui/react";
+import { useState } from "react";
 import { useMutation } from "urql";
 import Task from "./task";
 
-export default function TaskList(props: { data: any, completed: boolean, title: string, color: string, openDialog?: any, selectedUsers: number[] }) {
+export default function TaskList(props: { data: any, completed: boolean, title: string, color: string, openCreateTaskDialog?: any, selectedUsers: number[] }) {
 
   const UpdateTask = `
     mutation ($id: Int!, $completed: Boolean!) {
@@ -25,8 +26,12 @@ export default function TaskList(props: { data: any, completed: boolean, title: 
   const [updateTaskResult, updateTask] = useMutation(UpdateTask);
   const [deleteTaskResult, deleteTask] = useMutation(DeleteTask);
 
+  const [value, setValue] = useState(0)
+
   return (<section style={{ width: "100%" }}>
     <Heading as="h3" size="l">{props.title}</Heading>
+
+    <button onClick={() => { setValue(value + 1) }}>{value}</button>
 
     <ul style={{
       marginBlockStart: "0",
@@ -39,8 +44,8 @@ export default function TaskList(props: { data: any, completed: boolean, title: 
       justifyContent: "flex-start",
       gap: "10px"
     }}>
-      {props.openDialog && <li><IconButton aria-label='Add to friends' icon={<AddIcon />} onClick={() => {
-        props.openDialog()
+      {props.openCreateTaskDialog && <li><IconButton aria-label='Create task' icon={<AddIcon />} onClick={() => {
+        props.openCreateTaskDialog()
       }} /> </li>}
       {props.data.tasks.filter((task: any) => task.completed === props.completed).filter((task: any) => props.selectedUsers.includes(task.authorId)).map((task: any) => (
         <Task key={task.id} task={task} updateTask={updateTask} deleteTask={deleteTask} color={props.color} />

@@ -21,7 +21,7 @@ query {
     title
     authorId
     author {
-      name, email
+      name, email, id
     }
     completed
   }
@@ -31,6 +31,7 @@ query {
 const Home: NextPage = () => {
   const [result, reexecuteQuery] = useQuery({
     query: QueryUsersTasks,
+    requestPolicy: "cache-first"
   });
   const { data, fetching, error } = result;
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -49,6 +50,8 @@ const Home: NextPage = () => {
     setSelectedUsers(newSelectedUsers);
   }
 
+  console.log("index")
+
   return (
     <div className={styles.container}>
       <Head>
@@ -62,12 +65,12 @@ const Home: NextPage = () => {
       <main>
         <VStack spacing={4} divider={<StackDivider borderColor='gray.200' />}>
           <UserTags users={data.users} changeTags={onChangeUserTags} selectedTags={selectedUsers} />
-          <TaskList data={data} title="Todo" completed={false} color="rgb(250,120,120)" openDialog={onOpen} selectedUsers={selectedUsers} />
+          <TaskList data={data} title="Todo" completed={false} color="rgb(250,120,120)" openCreateTaskDialog={onOpen} selectedUsers={selectedUsers} />
           <TaskList data={data} title="Completed" completed={true} color="rgb(120,250,120)" selectedUsers={selectedUsers} />
         </VStack>
       </main>
 
-      {isOpen && <CreateTaskDialog open={isOpen} onClose={onClose} users={data.users} />}
+      <CreateTaskDialog open={isOpen} onClose={onClose} users={data.users} />
 
     </div >
   )

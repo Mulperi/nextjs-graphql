@@ -20,6 +20,7 @@ export default function Task(props: { task: any, updateTask: any, color: string,
                         <Badge colorScheme={task.completed ? 'green' : 'purple'} onClick={() => {
                             const variables = { id: task.id, completed: !task.completed };
                             updateTask(variables).then((result: any) => {
+                                console.log(result)
                             });
                         }} style={{ cursor: "pointer" }}>{task.title}</Badge>
                         <Badge colorScheme='default'>{task.author.name}</Badge>

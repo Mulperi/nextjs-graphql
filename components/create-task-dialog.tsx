@@ -58,7 +58,8 @@ export default function CreateTaskDialog(props: { open: boolean, onClose: any, u
                                 }
                             </FormControl>
                             <FormControl isInvalid={authorError}>
-                                <Select placeholder='Author' onChange={handleAuthorChange} value={authorId}>
+                                <FormLabel htmlFor='Author'>Author</FormLabel>
+                                <Select placeholder='Author' onChange={handleAuthorChange} value={authorId} id='Author'>
                                     {props.users.map((user: any) => (<option key={user.id} value={user.id}>{user.name}</option>))}
                                 </Select>
                                 {authorError && <FormErrorMessage>Author is required.</FormErrorMessage>
