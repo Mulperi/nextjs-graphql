@@ -5,11 +5,12 @@ import { useQuery } from 'urql';
 import TaskList from '../components/task-list';
 import Header from '../components/header';
 import CreateTaskDialog from '../components/create-task-dialog';
+import CreateUserDialog from '../components/create-user-dialog';
 import { StackDivider, useDisclosure, VStack } from '@chakra-ui/react';
 import UserTags from '../components/user-tags';
 import { useState } from 'react';
 
-const QueryUsersTasks = `
+export const QueryUsersTasks = `
 query {
   users {
     id
@@ -34,7 +35,8 @@ const Home: NextPage = () => {
     requestPolicy: "cache-first"
   });
   const { data, fetching, error } = result;
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isTaskDialogOpen, onOpen: onTaskDialogOpen, onClose: onTaskDialogClose } = useDisclosure();
+  const { isOpen: isUserDialogOpen, onOpen: onUserDialogOpen, onClose: onUserDialogClose } = useDisclosure();
   const [selectedUsers, setSelectedUsers] = useState<number[]>(data && data.users ? data.users.map((user: any) => user.id) : [])
 
   if (fetching) return <p>Loading...</p>;
@@ -64,13 +66,14 @@ const Home: NextPage = () => {
 
       <main>
         <VStack spacing={4} divider={<StackDivider borderColor='gray.200' />}>
-          <UserTags users={data.users} changeTags={onChangeUserTags} selectedTags={selectedUsers} />
-          <TaskList data={data} title="Todo" completed={false} color="rgb(250,120,120)" openCreateTaskDialog={onOpen} selectedUsers={selectedUsers} />
+          <UserTags users={data.users} changeTags={onChangeUserTags} selectedTags={selectedUsers} openCreateUserDialog={onUserDialogOpen} />
+          <TaskList data={data} title="Todo" completed={false} color="rgb(250,120,120)" openCreateTaskDialog={onTaskDialogOpen} selectedUsers={selectedUsers} />
           <TaskList data={data} title="Completed" completed={true} color="rgb(120,250,120)" selectedUsers={selectedUsers} />
         </VStack>
       </main>
 
-      <CreateTaskDialog open={isOpen} onClose={onClose} users={data.users} />
+      <CreateTaskDialog open={isTaskDialogOpen} onClose={onTaskDialogClose} users={data.users} />
+      <CreateUserDialog open={isUserDialogOpen} onClose={onUserDialogClose} users={data.users} />
 
     </div >
   )

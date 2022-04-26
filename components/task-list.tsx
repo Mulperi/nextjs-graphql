@@ -26,12 +26,8 @@ export default function TaskList(props: { data: any, completed: boolean, title: 
   const [updateTaskResult, updateTask] = useMutation(UpdateTask);
   const [deleteTaskResult, deleteTask] = useMutation(DeleteTask);
 
-  const [value, setValue] = useState(0)
-
   return (<section style={{ width: "100%" }}>
     <Heading as="h3" size="l">{props.title}</Heading>
-
-    <button onClick={() => { setValue(value + 1) }}>{value}</button>
 
     <ul style={{
       marginBlockStart: "0",
