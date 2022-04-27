@@ -13,6 +13,7 @@ import {
     Input,
     VStack,
     FormErrorMessage,
+    useToast,
 } from '@chakra-ui/react'
 import { useMutation } from "urql";
 
@@ -29,6 +30,7 @@ mutation ($email: String!, $name: String!) {
 
 export default function CreateUserDialog(props: { open: boolean, onClose: any, users: any }) {
     const [createUserResult, createUser] = useMutation(MutationCreateUser);
+    const toast = useToast()
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const nameError = name === '';
@@ -65,8 +67,22 @@ export default function CreateUserDialog(props: { open: boolean, onClose: any, u
                         <Button colorScheme='blue' mr={3} onClick={() => {
                             const variables = { name, email };
                             createUser(variables).then((result: any) => {
+                                toast({
+                                    title: `New user created.`,
+                                    status: "success",
+                                    isClosable: true,
+                                    duration: 3000
+                                })
                                 props.onClose();
-                            });
+                            }).catch((e) => {
+                                console.log(e)
+                                toast({
+                                    title: `Error creating user: ${e}`,
+                                    status: "error",
+                                    isClosable: true,
+                                    duration: 3000
+                                })
+                            });;
                         }} disabled={nameError || emailError}>
                             Create
                         </Button>

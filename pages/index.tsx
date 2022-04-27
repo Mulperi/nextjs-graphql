@@ -37,7 +37,7 @@ const Home: NextPage = () => {
   const { data, fetching, error } = result;
   const { isOpen: isTaskDialogOpen, onOpen: onTaskDialogOpen, onClose: onTaskDialogClose } = useDisclosure();
   const { isOpen: isUserDialogOpen, onOpen: onUserDialogOpen, onClose: onUserDialogClose } = useDisclosure();
-  const [selectedUsers, setSelectedUsers] = useState<number[]>(data && data.users ? data.users.map((user: any) => user.id) : [])
+  const [selectedUsers, setSelectedUsers] = useState<number[]>(data && data.users ? data.users.map((user: any) => user?.id) : [])
 
   if (fetching) return <p>Loading...</p>;
   if (error) return <p>Oh no... {error.message}</p>;
@@ -67,8 +67,8 @@ const Home: NextPage = () => {
       <main>
         <VStack spacing={4} divider={<StackDivider borderColor='gray.200' />}>
           <UserTags users={data.users} changeTags={onChangeUserTags} selectedTags={selectedUsers} openCreateUserDialog={onUserDialogOpen} />
-          <TaskList data={data} title="Todo" completed={false} color="rgb(250,120,120)" openCreateTaskDialog={onTaskDialogOpen} selectedUsers={selectedUsers} />
-          <TaskList data={data} title="Completed" completed={true} color="rgb(120,250,120)" selectedUsers={selectedUsers} />
+          <TaskList data={data} title="Todo" completed={false} openCreateTaskDialog={onTaskDialogOpen} selectedUsers={selectedUsers} />
+          <TaskList data={data} title="Completed" completed={true} selectedUsers={selectedUsers} />
         </VStack>
       </main>
 

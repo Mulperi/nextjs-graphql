@@ -14,6 +14,7 @@ import {
     FormHelperText,
     VStack,
     FormErrorMessage,
+    useToast,
 } from '@chakra-ui/react'
 import { Select } from '@chakra-ui/react'
 import { useMutation } from "urql";
@@ -35,6 +36,7 @@ export default function CreateTaskDialog(props: { open: boolean, onClose: any, u
     const [createTaskResult, createTask] = useMutation(MutationCreateTask);
     const [title, setTitle] = useState('New task');
     const [authorId, setAuthorId] = useState<string>("");
+    const toast = useToast()
     const titleError = title === '';
     const authorError = !authorId;
     const handleTitleChange = (e: any) => setTitle(e.target.value)
@@ -72,7 +74,15 @@ export default function CreateTaskDialog(props: { open: boolean, onClose: any, u
                         <Button colorScheme='blue' mr={3} onClick={() => {
                             const variables = { title, authorId: parseInt(authorId) };
                             createTask(variables).then((result: any) => {
+                                toast({
+                                    title: `New task created.`,
+                                    status: "success",
+                                    isClosable: true,
+                                    duration: 3000
+                                })
                                 props.onClose();
+                            }).catch((e) => {
+                                console.log(e)
                             });
                         }} disabled={titleError || authorError}>
                             Create

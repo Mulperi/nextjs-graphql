@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useMutation } from "urql";
 import Task from "./task";
 
-export default function TaskList(props: { data: any, completed: boolean, title: string, color: string, openCreateTaskDialog?: any, selectedUsers: number[] }) {
+export default function TaskList(props: { data: any, completed: boolean, title: string, openCreateTaskDialog?: any, selectedUsers: number[] }) {
 
   const UpdateTask = `
     mutation ($id: Int!, $completed: Boolean!) {
@@ -44,7 +44,7 @@ export default function TaskList(props: { data: any, completed: boolean, title: 
         props.openCreateTaskDialog()
       }} /> </li>}
       {props.data.tasks.filter((task: any) => task.completed === props.completed).filter((task: any) => props.selectedUsers.includes(task.authorId)).map((task: any) => (
-        <Task key={task.id} task={task} updateTask={updateTask} deleteTask={deleteTask} color={props.color} />
+        <Task key={task.id} task={task} updateTask={updateTask} deleteTask={deleteTask} />
       ))}
     </ul>
   </section>)

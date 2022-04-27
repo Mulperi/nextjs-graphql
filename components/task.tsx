@@ -1,9 +1,20 @@
-import { Badge, Box, Stack, StackDivider, Switch, VStack } from "@chakra-ui/react";
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
+import { Badge, Box, Button, ButtonGroup, HStack, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverFooter, PopoverHeader, Stack, StackDivider, Switch, useToast, VStack } from "@chakra-ui/react";
 import { useState } from "react";
+import {
+    PopoverTrigger as OrigPopoverTrigger
+} from '@chakra-ui/react'
 
-export default function Task(props: { task: any, updateTask: any, color: string, deleteTask: any }) {
-    const { task, updateTask, deleteTask, color } = props;
+const PopoverTrigger: React.FC<{ children: React.ReactNode }> =
+    OrigPopoverTrigger
+
+export default function Task(props: { task: any, updateTask: any, deleteTask: any }) {
+    const { task, updateTask, deleteTask } = props;
     const [showDelete, toggleShowDelete] = useState(false);
+    const toast = useToast();
+    const closePopover = () => toggleShowDelete(false);
+    const showPopover = () => toggleShowDelete(true);
+
 
     return (
         <li key={task.id}
@@ -22,21 +33,53 @@ export default function Task(props: { task: any, updateTask: any, color: string,
                             updateTask(variables).then((result: any) => {
                             });
                         }} style={{ cursor: "pointer" }}>{task.title}</Badge>
-                        <Badge colorScheme='default'>{task.author.name}</Badge>
-                    </Stack>
 
-                    {/* <div onClick={() => {
-                    const variables = { id: task.id, completed: !task.completed };
-                    updateTask(variables).then((result: any) => {
-                    });
-                }}></div> */}
-                    {/* <div style={{}}>
-                    {showDelete && <button onClick={() => {
-                        const variables = { id: task.id };
-                        deleteTask(variables).then((result: any) => {
-                        });
-                    }}>Delete</button>}
-                </div> */}
+                        <HStack justify="space-between">
+                            <Badge colorScheme='default'>{task.author.name}</Badge>
+                            <Popover isOpen={showDelete}
+                                onClose={closePopover}>
+                                <PopoverTrigger>
+                                    <div>
+                                        {showDelete && <ChevronDownIcon as="button" style={{ cursor: "pointer" }} onClick={closePopover} />}
+                                        {!showDelete && <ChevronUpIcon as="button" style={{ cursor: "pointer" }} onClick={showPopover} />}
+                                    </div>
+                                </PopoverTrigger>
+                                <PopoverContent>
+                                    <PopoverArrow />
+                                    <PopoverCloseButton />
+                                    <PopoverHeader>Are you sure?</PopoverHeader>
+                                    <PopoverBody>
+                                        The task will be permanently deleted!
+                                    </PopoverBody>
+                                    <PopoverFooter
+                                        border='0'
+                                        d='flex'
+                                        alignItems='center'
+                                        justifyContent='space-between'
+                                        pb={4}
+                                    >
+                                        <ButtonGroup size='sm'>
+                                            <Button colorScheme="red" onClick={() => {
+                                                const variables = { id: task.id };
+                                                deleteTask(variables).then((result: any) => {
+                                                    toast({
+                                                        title: `Task deleted.`,
+                                                        status: "success",
+                                                        isClosable: true,
+                                                        duration: 3000
+                                                    })
+                                                    closePopover();
+                                                });
+                                            }}>Delete</Button>
+                                            <Button colorScheme='blue' onClick={closePopover}>
+                                                Cancel
+                                            </Button>
+                                        </ButtonGroup>
+                                    </PopoverFooter>
+                                </PopoverContent>
+                            </Popover>
+                        </HStack>
+                    </Stack>
                 </VStack>
             </Box>
         </li>

@@ -22,6 +22,12 @@ const cache = cacheExchange({
           return { ...data, tasks: [...data.tasks, result.createTask] }
         })
       },
+      deleteTask: (result, args: any, cache) => {
+        cache.invalidate({
+          __typename: 'Task',
+          id: args.id,
+        });
+      },
     },
   }
 });
